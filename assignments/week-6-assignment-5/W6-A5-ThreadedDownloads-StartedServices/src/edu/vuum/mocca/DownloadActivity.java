@@ -66,12 +66,11 @@ public class DownloadActivity extends DownloadBase {
     	
     	// Handle any messages that get sent to this Handler
     	@Override
-	public void handleMessage(Message msg) {
-    		
+        public void handleMessage(Message msg) {
             // Get an actual reference to the DownloadActivity
             // from the WeakReference.
             final DownloadActivity activity = outerClass.get();
-    		
+
             // If DownloadActivity hasn't been garbage collected
             // (closed by user), display the sent image.
             if (activity != null) {
@@ -111,7 +110,8 @@ public class DownloadActivity extends DownloadBase {
             // DownloadIntentService with the appropriate Intent
             // returned from the makeIntent() factory method.
 
-            which = "Starting IntentService";
+
+            which = "Starting DownloadIntentService";
             // Create the download intent
             final Intent downloadIntent = DownloadIntentService.makeIntent(DownloadActivity.this, handler, getUrlString());
             startService(downloadIntent);
