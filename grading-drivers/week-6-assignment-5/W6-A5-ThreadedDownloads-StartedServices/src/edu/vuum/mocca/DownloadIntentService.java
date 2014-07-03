@@ -45,8 +45,8 @@ public class DownloadIntentService extends IntentService {
      * Make an intent that will start this service if supplied to
      * startService() as a parameter.
      * 
-     * @param context		The context of the calling component.
-     * @param handler		The handler that the service should
+     * @param context           The context of the calling component.
+     * @param handler           The handler that the service should
      *                          use to respond with a result  
      * @param uri               The web URL of a file to download
      * 
@@ -59,11 +59,11 @@ public class DownloadIntentService extends IntentService {
     public static Intent makeIntent(Context context,
                                     Handler handler,
                                     String uri) {
-    	// TODO - You fill in here to replace null with a call to the
-    	// factory method in DownloadUtils that makes a Messenger
-    	// Intent with the appropriate parameters.
+        // TODO - You fill in here to replace null with a call to the
+        // factory method in DownloadUtils that makes a Messenger
+        // Intent with the appropriate parameters.
 
-        return null;
+        return DownloadUtils.makeMessengerIntent(context, DownloadIntentService.class, handler, uri);
     }
 
     /**
@@ -81,10 +81,12 @@ public class DownloadIntentService extends IntentService {
      * user to define what happens when an Intent is actually handled.
      */
     @Override
-	protected void onHandleIntent (Intent intent) {
+        protected void onHandleIntent (Intent intent) {
         // TODO - You fill in here with a call the appropriate helper
         // method from the DownloadUtils class that downloads the uri
         // in the intent and returns the file's pathname using a
         // Messenger who's Bundle key is defined by DownloadUtils.MESSENGER_KEY
+        Messenger messenger = (Messenger)intent.getExtras().getParcelable(DownloadUtils.MESSENGER_KEY);
+        DownloadUtils.downloadAndRespond(DownloadIntentService.this, intent.getData(), messenger);
     }
 }

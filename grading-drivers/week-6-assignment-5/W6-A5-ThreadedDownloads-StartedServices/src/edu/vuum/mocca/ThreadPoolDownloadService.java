@@ -34,7 +34,7 @@ public class ThreadPoolDownloadService extends Service {
      * used to service download requests.
      */
     static final int MAX_THREADS = 4;
-	
+        
     /**
      * The ExecutorService that references a ThreadPool.
      */
@@ -44,20 +44,20 @@ public class ThreadPoolDownloadService extends Service {
      * Hook method called when the Service is created.
      */
     @Override
-	public void onCreate() {
+        public void onCreate() {
         // TODO - You fill in here to replace null with a new
         // FixedThreadPool Executor that's configured to use
         // MAX_THREADS. Use a factory method in the Executors class.
 
-        mExecutor = null;
+        mExecutor = Executors.newFixedThreadPool(MAX_THREADS);
     }
 
     /**
      * Make an intent that will start this service if supplied to
      * startService() as a parameter.
      * 
-     * @param context		The context of the calling component.
-     * @param handler		The handler that the service should
+     * @param context           The context of the calling component.
+     * @param handler           The handler that the service should
      *                          use to respond with a result  
      * @param uri               The web URL of a file to download
      * 
@@ -70,11 +70,11 @@ public class ThreadPoolDownloadService extends Service {
     public static Intent makeIntent(Context context,
                                     Handler handler,
                                     String uri) {
-    	// TODO - You fill in here, by replacing null with an
+        // TODO - You fill in here, by replacing null with an
         // invocation of the appropriate factory method in
         // DownloadUtils that makes a MessengerIntent.
 
-        return null;
+        return DownloadUtils.makeMessengerIntent(context, ThreadPoolDownloadService.class, handler, uri);
     }
 
     /**
@@ -82,7 +82,7 @@ public class ThreadPoolDownloadService extends Service {
      * the proper Intent.
      */
     @Override
-	public int onStartCommand(final Intent intent,
+        public int onStartCommand(final Intent intent,
                               int flags,
                               int startId) {
         // TODO - You fill in here to replace null with a new Runnable
@@ -93,7 +93,14 @@ public class ThreadPoolDownloadService extends Service {
         // the uri in the intent and returns the file's pathname using
         // a Messenger who's Bundle key is defined by DownloadUtils.MESSENGER_KEY.
 
-        Runnable downloadRunnable = null;
+        Runnable downloadRunnable = new Runnable() {
+
+            @Override
+            public void run() {
+                Messenger messenger = intent.getExtras().getParcelable(DownloadUtils.MESSENGER_KEY);
+                DownloadUtils.downloadAndRespond(ThreadPoolDownloadService.this, intent.getData(), messenger);
+            }
+        };
 
         mExecutor.execute(downloadRunnable);
       
@@ -110,9 +117,9 @@ public class ThreadPoolDownloadService extends Service {
      * holds.
      */
     @Override
-	public void onDestroy() {
-    	// Ensure that the threads used by the ThreadPoolExecutor
-    	// complete and are reclaimed by the system.
+        public void onDestroy() {
+        // Ensure that the threads used by the ThreadPoolExecutor
+        // complete and are reclaimed by the system.
 
         mExecutor.shutdown();
     }
@@ -122,7 +129,7 @@ public class ThreadPoolDownloadService extends Service {
      * Service.
      */
     @Override
-	public IBinder onBind (Intent intent) {
+        public IBinder onBind (Intent intent) {
         return null;
     }
 }
